@@ -20,34 +20,42 @@ let userProfile = JSON.parse(localStorage.getItem('userProfile')) || {
 
 // Fix old absolute /assets/ paths saved in localStorage → relative ./assets/
 products = products.map(p => ({ ...p, image: p.image ? p.image.replace(/^\/assets\//, './assets/') : p.image }));
-cart     = cart.map(p =>     ({ ...p, image: p.image ? p.image.replace(/^\/assets\//, './assets/') : p.image }));
+cart = cart.map(p => ({ ...p, image: p.image ? p.image.replace(/^\/assets\//, './assets/') : p.image }));
 
 // Language dictionary
 const LANG = {
-    en: { home:'Home', products:'Paint Products', supplies:'Supplies', about:'About Us',
-          shopNow:'Shop Now', learnMore:'Learn More', addCart:'Add to Cart', buyNow:'Buy Now',
-          featured:'Featured Products', categories:'Our Categories', heroTitle:'Multi-Brand',
-          heroSpan:'Painting Solutions', heroSub:'Authorized dealers for Asian Paints, Dulux, Berger, and more.',
-          checkout:'Checkout Now', myOrders:'My Orders', myProfile:'My Profile', settings:'Settings',
-          language:'Language', save:'Save Changes', logout:'Logout', login:'Login', dashboard:'Dashboard' },
-    hi: { home:'होम', products:'पेंट उत्पाद', supplies:'आपूर्ति', about:'हमारे बारे में',
-          shopNow:'अभी खरीदें', learnMore:'अधिक जानें', addCart:'कार्ट में डालें', buyNow:'अभी खरीदें',
-          featured:'विशेष उत्पाद', categories:'हमारी श्रेणियाँ', heroTitle:'मल्टी-ब्रांड',
-          heroSpan:'पेंटिंग समाधान', heroSub:'एशियन पेंट्स, डुलक्स, बर्जर और अधिक के अधिकृत डीलर।',
-          checkout:'चेकआउट करें', myOrders:'मेरे ऑर्डर', myProfile:'मेरी प्रोफ़ाइल', settings:'सेटिंग्स',
-          language:'भाषा', save:'परिवर्तन सहेजें', logout:'लॉग आउट', login:'लॉगिन', dashboard:'डैशबोर्ड' },
-    es: { home:'Inicio', products:'Pinturas', supplies:'Suministros', about:'Sobre Nosotros',
-          shopNow:'Comprar Ahora', learnMore:'Saber Más', addCart:'Añadir al Carrito', buyNow:'Comprar Ya',
-          featured:'Productos Destacados', categories:'Nuestras Categorías', heroTitle:'Multi-Marca',
-          heroSpan:'Soluciones de Pintura', heroSub:'Distribuidores autorizados de Asian Paints, Dulux, Berger y más.',
-          checkout:'Pagar Ahora', myOrders:'Mis Pedidos', myProfile:'Mi Perfil', settings:'Configuración',
-          language:'Idioma', save:'Guardar Cambios', logout:'Cerrar Sesión', login:'Iniciar Sesión', dashboard:'Panel' },
-    fr: { home:'Accueil', products:'Peintures', supplies:'Fournitures', about:'À Propos',
-          shopNow:'Acheter Maintenant', learnMore:'En Savoir Plus', addCart:'Ajouter au Panier', buyNow:'Acheter',
-          featured:'Produits Vedettes', categories:'Nos Catégories', heroTitle:'Multi-Marque',
-          heroSpan:'Solutions de Peinture', heroSub:'Distributeurs agréés d\'Asian Paints, Dulux, Berger et plus.',
-          checkout:'Passer la Commande', myOrders:'Mes Commandes', myProfile:'Mon Profil', settings:'Paramètres',
-          language:'Langue', save:'Enregistrer', logout:'Se Déconnecter', login:'Connexion', dashboard:'Tableau de Bord' }
+    en: {
+        home: 'Home', products: 'Paint Products', supplies: 'Supplies', about: 'About Us',
+        shopNow: 'Shop Now', learnMore: 'Learn More', addCart: 'Add to Cart', buyNow: 'Buy Now',
+        featured: 'Featured Products', categories: 'Our Categories', heroTitle: 'Multi-Brand',
+        heroSpan: 'Painting Solutions', heroSub: 'Authorized dealers for Asian Paints, Dulux, Berger, and more.',
+        checkout: 'Checkout Now', myOrders: 'My Orders', myProfile: 'My Profile', settings: 'Settings',
+        language: 'Language', save: 'Save Changes', logout: 'Logout', login: 'Login', dashboard: 'Dashboard'
+    },
+    hi: {
+        home: 'होम', products: 'पेंट उत्पाद', supplies: 'आपूर्ति', about: 'हमारे बारे में',
+        shopNow: 'अभी खरीदें', learnMore: 'अधिक जानें', addCart: 'कार्ट में डालें', buyNow: 'अभी खरीदें',
+        featured: 'विशेष उत्पाद', categories: 'हमारी श्रेणियाँ', heroTitle: 'मल्टी-ब्रांड',
+        heroSpan: 'पेंटिंग समाधान', heroSub: 'एशियन पेंट्स, डुलक्स, बर्जर और अधिक के अधिकृत डीलर।',
+        checkout: 'चेकआउट करें', myOrders: 'मेरे ऑर्डर', myProfile: 'मेरी प्रोफ़ाइल', settings: 'सेटिंग्स',
+        language: 'भाषा', save: 'परिवर्तन सहेजें', logout: 'लॉग आउट', login: 'लॉगिन', dashboard: 'डैशबोर्ड'
+    },
+    es: {
+        home: 'Inicio', products: 'Pinturas', supplies: 'Suministros', about: 'Sobre Nosotros',
+        shopNow: 'Comprar Ahora', learnMore: 'Saber Más', addCart: 'Añadir al Carrito', buyNow: 'Comprar Ya',
+        featured: 'Productos Destacados', categories: 'Nuestras Categorías', heroTitle: 'Multi-Marca',
+        heroSpan: 'Soluciones de Pintura', heroSub: 'Distribuidores autorizados de Asian Paints, Dulux, Berger y más.',
+        checkout: 'Pagar Ahora', myOrders: 'Mis Pedidos', myProfile: 'Mi Perfil', settings: 'Configuración',
+        language: 'Idioma', save: 'Guardar Cambios', logout: 'Cerrar Sesión', login: 'Iniciar Sesión', dashboard: 'Panel'
+    },
+    fr: {
+        home: 'Accueil', products: 'Peintures', supplies: 'Fournitures', about: 'À Propos',
+        shopNow: 'Acheter Maintenant', learnMore: 'En Savoir Plus', addCart: 'Ajouter au Panier', buyNow: 'Acheter',
+        featured: 'Produits Vedettes', categories: 'Nos Catégories', heroTitle: 'Multi-Marque',
+        heroSpan: 'Solutions de Peinture', heroSub: 'Distributeurs agréés d\'Asian Paints, Dulux, Berger et plus.',
+        checkout: 'Passer la Commande', myOrders: 'Mes Commandes', myProfile: 'Mon Profil', settings: 'Paramètres',
+        language: 'Langue', save: 'Enregistrer', logout: 'Se Déconnecter', login: 'Connexion', dashboard: 'Tableau de Bord'
+    }
 };
 const t = (key) => (LANG[userProfile.language] || LANG.en)[key] || key;
 
@@ -142,7 +150,7 @@ const renderStore = (container) => {
             <div class="hero-content">
                 <div class="reveal">
                     <h1>Multi-Brand <span>Painting Solutions</span></h1>
-                    <p>Authorized dealers for Asian Paints, Dulux, Berger, and more. Saw & Sons Enterprises brings you the world's best paint brands under one roof.</p>
+                    <p>Authorized dealers for Nerolac Paints, Asian Paints, Dulux, Berger, and more. Saw & Sons Enterprises brings you the world's best paint brands under one roof.</p>
                     <div class="hero-btns">
                         <a href="#products" class="btn btn-primary">Shop Now</a>
                         <a href="#about" class="btn" style="margin-left: 15px;">Learn More</a>
@@ -185,7 +193,7 @@ const renderStore = (container) => {
                             <h3 class="product-card-title">${product.name}</h3>
                             <p class="product-card-desc">${product.description}</p>
                             <div class="product-card-footer">
-                                <span class="product-card-price">$${product.price}</span>
+                                <span class="product-card-price">₹${product.price}</span>
                                 <span class="product-card-stock ${product.stock > 20 ? 'in-stock' : product.stock > 0 ? 'low-stock' : 'out-stock'}">
                                     ${product.stock > 20 ? '✓ In Stock' : product.stock > 0 ? '⚠ Low Stock' : '✗ Out of Stock'}
                                 </span>
@@ -269,11 +277,11 @@ const renderLogin = (container) => {
             <p style="margin-top: 20px; font-size: 0.8rem; color: #94a3b8;">Default: admin@sawandsons.com / admin123</p>
         </div>
     `;
-    
+
     document.getElementById('login-btn').addEventListener('click', () => {
         const email = document.getElementById('l-email').value;
         const pass = document.getElementById('l-pass').value;
-        
+
         if (email === 'admin@sawandsons.com' && pass === 'admin123') {
             currentUser = { email, role: 'admin', name: 'Super Admin' };
             saveState();
@@ -282,7 +290,7 @@ const renderLogin = (container) => {
             alert('Invalid credentials!');
         }
     });
-    
+
     initReveal();
 };
 
@@ -315,7 +323,7 @@ const renderAdmin = (container) => {
                 </div>
                 <div class="admin-card reveal" style="transition-delay: 0.2s">
                     <h3>Revenue</h3>
-                    <p style="font-size: 2rem; font-weight: 700; color: var(--accent-magenta);">$${orders.reduce((acc, o) => acc + o.total, 0).toFixed(2)}</p>
+                    <p style="font-size: 2rem; font-weight: 700; color: var(--accent-magenta);">₹${orders.reduce((acc, o) => acc + o.total, 0).toFixed(2)}</p>
                 </div>
             </div>
 
@@ -340,7 +348,7 @@ const renderAdmin = (container) => {
                             <tr>
                                 <td>${p.name}</td>
                                 <td>${p.category}</td>
-                                <td>$${p.price}</td>
+                                <td>₹${p.price}</td>
                                 <td>
                                     <input type="number" value="${p.stock}" onchange="updateStock(${p.id}, this.value)" style="width: 60px; padding: 5px;">
                                 </td>
@@ -376,7 +384,7 @@ const renderAdmin = (container) => {
                                 <td>${o.id}</td>
                                 <td>${o.customer}</td>
                                 <td>${o.date}</td>
-                                <td>$${o.total.toFixed(2)}</td>
+                                <td>₹${o.total.toFixed(2)}</td>
                                 <td>${o.status}</td>
                             </tr>
                         `).join('')}
@@ -405,13 +413,13 @@ window.showProductDetail = (id) => {
         <div class="detail-info">
             <span class="product-card-badge" style="margin-bottom:12px; display:inline-block;">${product.category}</span>
             <h2 class="detail-title">${product.name}</h2>
-            <p class="detail-price">$${product.price.toFixed(2)}</p>
+            <p class="detail-price">₹${product.price.toFixed(2)}</p>
             <span class="product-card-stock ${stockClass}" style="margin-bottom:16px; display:inline-block;">${stockLabel}</span>
             <p class="detail-desc">${product.description}</p>
             <hr class="detail-divider">
             <div class="detail-meta">
                 <div><span class="meta-label">Category</span><span class="meta-value">${product.category}</span></div>
-                <div><span class="meta-label">SKU</span><span class="meta-value">SSE-${String(product.id).padStart(4,'0')}</span></div>
+                <div><span class="meta-label">SKU</span><span class="meta-value">SSE-${String(product.id).padStart(4, '0')}</span></div>
                 <div><span class="meta-label">Availability</span><span class="meta-value">${product.stock > 0 ? product.stock + ' units' : 'Unavailable'}</span></div>
             </div>
             <div class="detail-actions">
@@ -449,8 +457,8 @@ const createRipple = (btn, color = 'rgba(255,255,255,0.5)') => {
     const rect = btn.getBoundingClientRect();
     circle.style.cssText = `
         position:absolute; border-radius:50%; transform:scale(0); animation:rippleAnim 0.55s linear;
-        width:${Math.max(rect.width,rect.height)*2}px; height:${Math.max(rect.width,rect.height)*2}px;
-        left:${-Math.max(rect.width,rect.height)}px; top:${-Math.max(rect.width,rect.height)}px;
+        width:${Math.max(rect.width, rect.height) * 2}px; height:${Math.max(rect.width, rect.height) * 2}px;
+        left:${-Math.max(rect.width, rect.height)}px; top:${-Math.max(rect.width, rect.height)}px;
         background:${color}; pointer-events:none;
     `;
     btn.style.position = 'relative'; btn.style.overflow = 'hidden';
@@ -517,7 +525,7 @@ window.removeProduct = (id) => {
 window.showAddProductModal = () => {
     const modal = document.getElementById('product-modal');
     modal.style.display = 'block';
-    
+
     // Preview logic
     const fileInput = document.getElementById('p-image-file');
     const preview = document.getElementById('image-preview');
@@ -648,35 +656,35 @@ const renderFooter = () => {
 const renderCartDrawer = () => {
     const drawer = document.getElementById('cart-drawer');
     const total = cart.reduce((acc, item) => acc + item.price, 0);
-    
+
     drawer.innerHTML = `
         <div class="drawer-header">
             <h2>Shopping Cart</h2>
             <i class="fas fa-times" id="close-cart" style="cursor: pointer; font-size: 1.5rem;"></i>
         </div>
         <div style="flex-grow: 1; overflow-y: auto;">
-            ${cart.length === 0 ? '<p style="text-align: center; margin-top: 50px; color: #64748b;">Your cart is empty</p>' : 
-                cart.map((item, index) => `
+            ${cart.length === 0 ? '<p style="text-align: center; margin-top: 50px; color: #64748b;">Your cart is empty</p>' :
+            cart.map((item, index) => `
                     <div class="cart-item">
                         <img src="${item.image}" alt="${item.name}">
                         <div style="flex-grow: 1;">
                             <h4 style="margin-bottom: 5px;">${item.name}</h4>
-                            <p style="color: var(--accent-orange); font-weight: 600;">$${item.price.toFixed(2)}</p>
+                            <p style="color: var(--accent-orange); font-weight: 600;">₹${item.price.toFixed(2)}</p>
                         </div>
                         <button onclick="removeFromCart(${index})" style="background: none; border: none; color: #94a3b8; cursor: pointer;"><i class="fas fa-times"></i></button>
                     </div>
                 `).join('')
-            }
+        }
         </div>
         <div class="cart-footer">
             <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
                 <span style="font-weight: 600; font-size: 1.2rem;">Total</span>
-                <span style="font-weight: 700; font-size: 1.2rem; color: var(--primary);">$${total.toFixed(2)}</span>
+                <span style="font-weight: 700; font-size: 1.2rem; color: var(--primary);">₹${total.toFixed(2)}</span>
             </div>
             <button onclick="checkout()" class="btn btn-primary" style="width: 100%;" ${cart.length === 0 ? 'disabled' : ''}>Checkout Now</button>
         </div>
     `;
-    
+
     document.getElementById('close-cart').addEventListener('click', toggleCart);
 };
 
@@ -735,7 +743,7 @@ const renderOrdersTab = () => {
             <div class="order-card-body">
                 <span><i class="fas fa-calendar-alt"></i> ${o.date}</span>
                 <span><i class="fas fa-box"></i> ${o.items} item(s)</span>
-                <span class="order-total"><i class="fas fa-tag"></i> $${o.total.toFixed(2)}</span>
+                <span class="order-total"><i class="fas fa-tag"></i> ₹${o.total.toFixed(2)}</span>
             </div>
             <div class="order-card-footer">
                 <span>Customer: <strong>${o.customer}</strong></span>
@@ -764,7 +772,7 @@ window.viewOrderDetail = (orderId) => {
             <div class="order-detail-grid">
                 <div class="order-detail-item"><span class="meta-label">Customer</span><span class="meta-value">${o.customer}</span></div>
                 <div class="order-detail-item"><span class="meta-label">Items</span><span class="meta-value">${o.items} item(s)</span></div>
-                <div class="order-detail-item"><span class="meta-label">Total Amount</span><span class="meta-value" style="color:var(--primary);font-size:1.2rem;font-weight:800;">$${o.total.toFixed(2)}</span></div>
+                <div class="order-detail-item"><span class="meta-label">Total Amount</span><span class="meta-value" style="color:var(--primary);font-size:1.2rem;font-weight:800;">₹${o.total.toFixed(2)}</span></div>
                 <div class="order-detail-item"><span class="meta-label">Delivery Status</span><span class="meta-value">${o.status}</span></div>
             </div>
             <div class="order-timeline">
@@ -784,7 +792,7 @@ const renderProfileEditTab = () => {
     panel.innerHTML = `
         <div class="profile-avatar-section">
             <div class="profile-avatar-big" id="profile-avatar-display">
-                ${userProfile.avatar ? `<img src="${userProfile.avatar}" alt="avatar">` : `<span>${userProfile.name ? userProfile.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() : '?'}</span>`}
+                ${userProfile.avatar ? `<img src="${userProfile.avatar}" alt="avatar">` : `<span>${userProfile.name ? userProfile.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '?'}</span>`}
             </div>
             <label class="avatar-upload-btn" for="avatar-file-input"><i class="fas fa-camera"></i> Change Photo</label>
             <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
@@ -817,10 +825,10 @@ window.handleAvatarUpload = (e) => {
 };
 
 window.saveProfile = () => {
-    userProfile.name    = document.getElementById('prof-name').value.trim();
-    userProfile.email   = document.getElementById('prof-email').value.trim();
-    userProfile.phone   = document.getElementById('prof-phone').value.trim();
-    userProfile.city    = document.getElementById('prof-city').value.trim();
+    userProfile.name = document.getElementById('prof-name').value.trim();
+    userProfile.email = document.getElementById('prof-email').value.trim();
+    userProfile.phone = document.getElementById('prof-phone').value.trim();
+    userProfile.city = document.getElementById('prof-city').value.trim();
     userProfile.address = document.getElementById('prof-address').value.trim();
     saveState();
     updateNavbar();
@@ -831,10 +839,10 @@ window.saveProfile = () => {
 const renderSettingsTab = () => {
     const panel = document.getElementById('tab-settings');
     const langs = [
-        { code:'en', label:'🇬🇧 English' },
-        { code:'hi', label:'🇮🇳 हिन्दी' },
-        { code:'es', label:'🇪🇸 Español' },
-        { code:'fr', label:'🇫🇷 Français' }
+        { code: 'en', label: '🇬🇧 English' },
+        { code: 'hi', label: '🇮🇳 हिन्दी' },
+        { code: 'es', label: '🇪🇸 Español' },
+        { code: 'fr', label: '🇫🇷 Français' }
     ];
     panel.innerHTML = `
         <h3 class="settings-section-title"><i class="fas fa-globe"></i> ${t('language')}</h3>
@@ -924,15 +932,15 @@ window.goToCheckoutStep = (step) => {
     });
     document.querySelectorAll('.step-dot').forEach((d, i) => {
         d.classList.toggle('active', i + 1 === step);
-        d.classList.toggle('done',   i + 1 < step);
+        d.classList.toggle('done', i + 1 < step);
     });
 };
 
 window.proceedToPayment = () => {
-    const name    = document.getElementById('co-name').value.trim();
-    const phone   = document.getElementById('co-phone').value.trim();
+    const name = document.getElementById('co-name').value.trim();
+    const phone = document.getElementById('co-phone').value.trim();
     const address = document.getElementById('co-address').value.trim();
-    const city    = document.getElementById('co-city').value.trim();
+    const city = document.getElementById('co-city').value.trim();
     const pincode = document.getElementById('co-pincode').value.trim();
     if (!name || !phone || !address || !city || !pincode) {
         showToast('Please fill all delivery details.', 'fa-exclamation-circle', '#f59e0b'); return;
@@ -976,8 +984,8 @@ window.proceedToConfirm = () => {
 };
 
 window.placeOrder = () => {
-    const total    = cart.reduce((acc, item) => acc + item.price, 0);
-    const orderId  = document.getElementById('confirm-order-id').textContent;
+    const total = cart.reduce((acc, item) => acc + item.price, 0);
+    const orderId = document.getElementById('confirm-order-id').textContent;
     const customer = document.getElementById('co-name').value;
     const order = {
         id: orderId, customer, items: cart.length, total,
@@ -1004,7 +1012,7 @@ window.addEventListener('load', () => {
         app.appendChild(overlay);
         overlay.addEventListener('click', toggleCart);
     }
-    
+
     document.getElementById('cart-btn').addEventListener('click', toggleCart);
 
     router();
