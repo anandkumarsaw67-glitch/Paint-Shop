@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  // './' makes all asset paths relative so they work on GitHub Pages
-  // regardless of what your repo name is
-  base: './',
+  // Set to the GitHub Pages repo subdirectory so all assets load correctly
+  base: '/Paint-Shop/',
 })

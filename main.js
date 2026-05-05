@@ -1,10 +1,10 @@
 // State Management
 let products = JSON.parse(localStorage.getItem('products')) || [
-    { id: 1, name: 'Asian Paints Royale Luxury', category: 'Interior', price: 45.00, stock: 120, image: './assets/interior.png', description: 'Experience luxury with Asian Paints Royale. A perfect silk finish for your walls.' },
-    { id: 2, name: 'Dulux Weathershield Pro', category: 'Exterior', price: 65.00, stock: 85, image: './assets/exterior.png', description: 'Advanced protection from Dulux for your homes exterior walls.' },
-    { id: 3, name: 'Berger Silk Glamor', category: 'Interior', price: 50.00, stock: 60, image: './assets/interior.png', description: 'Ultra-luxurious interior finish from Berger Paints.' },
-    { id: 4, name: 'Nippon Paint Weatherbond', category: 'Exterior', price: 55.00, stock: 40, image: './assets/exterior.png', description: 'High-performance exterior paint for extreme weather.' },
-    { id: 5, name: 'Professional Paint Set', category: 'Supplies', price: 25.00, stock: 100, image: './assets/supplies.png', description: 'Premium quality brushes and rollers for a perfect finish.' }
+    { id: 1, name: 'Asian Paints Royale Luxury', category: 'Interior', price: 45.00, stock: 120, image: '/Paint-Shop/assets/interior.png', description: 'Experience luxury with Asian Paints Royale. A perfect silk finish for your walls.' },
+    { id: 2, name: 'Dulux Weathershield Pro', category: 'Exterior', price: 65.00, stock: 85, image: '/Paint-Shop/assets/exterior.png', description: 'Advanced protection from Dulux for your homes exterior walls.' },
+    { id: 3, name: 'Berger Silk Glamor', category: 'Interior', price: 50.00, stock: 60, image: '/Paint-Shop/assets/interior.png', description: 'Ultra-luxurious interior finish from Berger Paints.' },
+    { id: 4, name: 'Nippon Paint Weatherbond', category: 'Exterior', price: 55.00, stock: 40, image: '/Paint-Shop/assets/exterior.png', description: 'High-performance exterior paint for extreme weather.' },
+    { id: 5, name: 'Professional Paint Set', category: 'Supplies', price: 25.00, stock: 100, image: '/Paint-Shop/assets/supplies.png', description: 'Premium quality brushes and rollers for a perfect finish.' }
 ];
 
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -18,9 +18,9 @@ let userProfile = JSON.parse(localStorage.getItem('userProfile')) || {
     name: '', email: '', phone: '', address: '', city: '', avatar: null, language: 'en'
 };
 
-// Fix old absolute /assets/ paths saved in localStorage → relative ./assets/
-products = products.map(p => ({ ...p, image: p.image ? p.image.replace(/^\/assets\//, './assets/') : p.image }));
-cart = cart.map(p => ({ ...p, image: p.image ? p.image.replace(/^\/assets\//, './assets/') : p.image }));
+// Fix old relative/absolute asset paths saved in localStorage → /Paint-Shop/assets/
+products = products.map(p => ({ ...p, image: p.image ? p.image.replace(/^(\.\/)?(assets\/)/, '/Paint-Shop/assets/').replace(/^\/assets\//, '/Paint-Shop/assets/') : p.image }));
+cart     = cart.map(p =>     ({ ...p, image: p.image ? p.image.replace(/^(\.\/)?(assets\/)/, '/Paint-Shop/assets/').replace(/^\/assets\//, '/Paint-Shop/assets/') : p.image }));
 
 // Language dictionary
 const LANG = {
@@ -167,7 +167,7 @@ const renderStore = (container) => {
             <div class="category-grid">
                 ${['Interior Paints', 'Exterior Paints', 'Supplies', 'Specialty'].map((cat, i) => `
                     <div class="category-card reveal" style="transition-delay: ${i * 0.1}s">
-                        <img src="./assets/${cat.toLowerCase().includes('interior') ? 'interior.png' : cat.toLowerCase().includes('supplies') ? 'supplies.png' : 'exterior.png'}" alt="${cat}">
+                        <img src="/Paint-Shop/assets/${cat.toLowerCase().includes('interior') ? 'interior.png' : cat.toLowerCase().includes('supplies') ? 'supplies.png' : 'exterior.png'}" alt="${cat}">
                         <div class="category-overlay">
                             <h3>${cat}</h3>
                             <p>Explore high-quality ${cat.toLowerCase()}</p>
@@ -228,7 +228,7 @@ const renderStore = (container) => {
                     </ul>
                 </div>
                 <div class="reveal" style="position: relative; height: 400px; border-radius: 20px; overflow: hidden; transition-delay: 0.2s">
-                    <img src="./assets/hero.png" alt="About Us" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="/Paint-Shop/assets/hero.png" alt="About Us" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
             </div>
         </section>
@@ -557,7 +557,7 @@ document.getElementById('product-form').onsubmit = (e) => {
     const stock = parseInt(document.getElementById('p-stock').value);
     const desc = document.getElementById('p-desc').value;
     const previewImg = document.querySelector('#image-preview img');
-    const image = previewImg ? previewImg.src : './assets/interior.png';
+    const image = previewImg ? previewImg.src : '/Paint-Shop/assets/interior.png';
 
     if (name && !isNaN(price) && !isNaN(stock)) {
         products.push({
@@ -614,7 +614,7 @@ const renderFooter = () => {
             <div class="footer-grid">
                 <div class="footer-col">
                     <div class="logo" style="margin-bottom: 20px; color: white;">
-                        <img src="./assets/logo.png" alt="Saw & Sons">
+                        <img src="/Paint-Shop/assets/logo.png" alt="Saw & Sons">
                         <span>SAW & SONS</span>
                     </div>
                     <p style="color: #94a3b8;">Authorized retail partners for leading paint brands. Providing quality solutions since 1990.</p>
