@@ -1,11 +1,15 @@
 // State Management
+const DEFAULT_IMAGE = './assets/interior.png';
+const BASE_PATH = window.location.pathname.includes('/Paint-Shop/') ? '/Paint-Shop/' : '/';
+
 let products = JSON.parse(localStorage.getItem('products')) || [
-    { id: 1, name: 'Asian Paints Royale Luxury', category: 'Interior', price: 45.00, stock: 120, image: '/Paint-Shop/assets/interior.png', description: 'Experience luxury with Asian Paints Royale. A perfect silk finish for your walls.' },
-    { id: 2, name: 'Dulux Weathershield Pro', category: 'Exterior', price: 65.00, stock: 85, image: '/Paint-Shop/assets/exterior.png', description: 'Advanced protection from Dulux for your homes exterior walls.' },
-    { id: 3, name: 'Berger Silk Glamor', category: 'Interior', price: 50.00, stock: 60, image: '/Paint-Shop/assets/interior.png', description: 'Ultra-luxurious interior finish from Berger Paints.' },
-    { id: 4, name: 'Nippon Paint Weatherbond', category: 'Exterior', price: 55.00, stock: 40, image: '/Paint-Shop/assets/exterior.png', description: 'High-performance exterior paint for extreme weather.' },
-    { id: 5, name: 'Professional Paint Set', category: 'Supplies', price: 25.00, stock: 100, image: '/Paint-Shop/assets/supplies.png', description: 'Premium quality brushes and rollers for a perfect finish.' }
+    { id: 1, name: 'Asian Paints Royale Luxury', category: 'Interior', price: 45.00, stock: 120, image: 'assets/interior.png', description: 'Experience luxury with Asian Paints Royale. A perfect silk finish for your walls.' },
+    { id: 2, name: 'Dulux Weathershield Pro', category: 'Exterior', price: 65.00, stock: 85, image: 'assets/exterior.png', description: 'Advanced protection from Dulux for your homes exterior walls.' },
+    { id: 3, name: 'Berger Silk Glamor', category: 'Interior', price: 50.00, stock: 60, image: 'assets/interior.png', description: 'Ultra-luxurious interior finish from Berger Paints.' },
+    { id: 4, name: 'Nippon Paint Weatherbond', category: 'Exterior', price: 55.00, stock: 40, image: 'assets/exterior.png', description: 'High-performance exterior paint for extreme weather.' },
+    { id: 5, name: 'Professional Paint Set', category: 'Supplies', price: 25.00, stock: 100, image: 'assets/supplies.png', description: 'Premium quality brushes and rollers for a perfect finish.' }
 ];
+
 
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let orders = JSON.parse(localStorage.getItem('orders')) || [
@@ -18,9 +22,19 @@ let userProfile = JSON.parse(localStorage.getItem('userProfile')) || {
     name: '', email: '', phone: '', address: '', city: '', avatar: null, language: 'en'
 };
 
-// Fix old relative/absolute asset paths saved in localStorage → /Paint-Shop/assets/
-products = products.map(p => ({ ...p, image: p.image ? p.image.replace(/^(\.\/)?(assets\/)/, '/Paint-Shop/assets/').replace(/^\/assets\//, '/Paint-Shop/assets/') : p.image }));
-cart     = cart.map(p =>     ({ ...p, image: p.image ? p.image.replace(/^(\.\/)?(assets\/)/, '/Paint-Shop/assets/').replace(/^\/assets\//, '/Paint-Shop/assets/') : p.image }));
+// Helper to get correct asset path
+const getAssetPath = (path) => {
+    if (!path) return DEFAULT_IMAGE;
+    if (path.startsWith('data:')) return path;
+    // Remove leading slashes and base paths to normalize
+    let cleanPath = path.replace(/^\/?(Paint-Shop\/)?/, '');
+    return BASE_PATH + cleanPath;
+};
+
+// Fix paths in loaded state
+products = products.map(p => ({ ...p, image: getAssetPath(p.image) }));
+cart     = cart.map(p =>     ({ ...p, image: getAssetPath(p.image) }));
+
 
 // Language dictionary
 const LANG = {
@@ -167,7 +181,8 @@ const renderStore = (container) => {
             <div class="category-grid">
                 ${['Interior Paints', 'Exterior Paints', 'Supplies', 'Specialty'].map((cat, i) => `
                     <div class="category-card reveal" style="transition-delay: ${i * 0.1}s">
-                        <img src="/Paint-Shop/assets/${cat.toLowerCase().includes('interior') ? 'interior.png' : cat.toLowerCase().includes('supplies') ? 'supplies.png' : 'exterior.png'}" alt="${cat}">
+                        <img src="${getAssetPath('assets/' + (cat.toLowerCase().includes('interior') ? 'interior.png' : cat.toLowerCase().includes('supplies') ? 'supplies.png' : 'exterior.png'))}" alt="${cat}">
+
                         <div class="category-overlay">
                             <h3>${cat}</h3>
                             <p>Explore high-quality ${cat.toLowerCase()}</p>
@@ -186,7 +201,7 @@ const renderStore = (container) => {
                 ${products.map(product => `
                     <div class="product-card reveal" onclick="showProductDetail(${product.id})">
                         <div class="product-card-img-wrap">
-                            <img src="${product.image}" alt="${product.name}">
+                            <img src="${product.image || DEFAULT_IMAGE}" alt="${product.name}" onerror="this.src='${DEFAULT_IMAGE}'">
                             <span class="product-card-badge">${product.category}</span>
                         </div>
                         <div class="product-card-body">
@@ -208,6 +223,7 @@ const renderStore = (container) => {
             </div>
         </section>
 
+
         <!-- Product Detail Modal -->
         <div id="product-detail-modal" class="modal" onclick="closeProductDetail()">
             <div class="product-detail-content" onclick="event.stopPropagation()">
@@ -228,8 +244,9 @@ const renderStore = (container) => {
                     </ul>
                 </div>
                 <div class="reveal" style="position: relative; height: 400px; border-radius: 20px; overflow: hidden; transition-delay: 0.2s">
-                    <img src="/Paint-Shop/assets/hero.png" alt="About Us" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="${getAssetPath('assets/hero.png')}" alt="About Us" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
+
             </div>
         </section>
 
@@ -399,6 +416,7 @@ const renderAdmin = (container) => {
 // --- Logic ---
 
 // Product Detail Modal
+
 window.showProductDetail = (id) => {
     const product = products.find(p => p.id === id);
     if (!product) return;
@@ -408,7 +426,7 @@ window.showProductDetail = (id) => {
     const stockLabel = product.stock > 20 ? '✓ In Stock' : product.stock > 0 ? `⚠ Low Stock (${product.stock} left)` : '✗ Out of Stock';
     body.innerHTML = `
         <div class="detail-img-wrap">
-            <img src="${product.image}" alt="${product.name}">
+            <img src="${product.image || DEFAULT_IMAGE}" alt="${product.name}" onerror="this.src='${DEFAULT_IMAGE}'">
         </div>
         <div class="detail-info">
             <span class="product-card-badge" style="margin-bottom:12px; display:inline-block;">${product.category}</span>
@@ -557,7 +575,7 @@ document.getElementById('product-form').onsubmit = (e) => {
     const stock = parseInt(document.getElementById('p-stock').value);
     const desc = document.getElementById('p-desc').value;
     const previewImg = document.querySelector('#image-preview img');
-    const image = previewImg ? previewImg.src : '/Paint-Shop/assets/interior.png';
+    const image = previewImg ? previewImg.src : getAssetPath('assets/interior.png');
 
     if (name && !isNaN(price) && !isNaN(stock)) {
         products.push({
@@ -614,9 +632,10 @@ const renderFooter = () => {
             <div class="footer-grid">
                 <div class="footer-col">
                     <div class="logo" style="margin-bottom: 20px; color: white;">
-                        <img src="/Paint-Shop/assets/logo.png" alt="Saw & Sons">
+                        <img src="${getAssetPath('assets/logo.png')}" alt="Saw & Sons">
                         <span>SAW & SONS</span>
                     </div>
+
                     <p style="color: #94a3b8;">Authorized retail partners for leading paint brands. Providing quality solutions since 1990.</p>
                 </div>
                 <div class="footer-col">
@@ -666,7 +685,7 @@ const renderCartDrawer = () => {
             ${cart.length === 0 ? '<p style="text-align: center; margin-top: 50px; color: #64748b;">Your cart is empty</p>' :
             cart.map((item, index) => `
                     <div class="cart-item">
-                        <img src="${item.image}" alt="${item.name}">
+                        <img src="${item.image || DEFAULT_IMAGE}" alt="${item.name}" onerror="this.src='${DEFAULT_IMAGE}'">
                         <div style="flex-grow: 1;">
                             <h4 style="margin-bottom: 5px;">${item.name}</h4>
                             <p style="color: var(--accent-orange); font-weight: 600;">₹${item.price.toFixed(2)}</p>
@@ -1002,25 +1021,48 @@ window.placeOrder = () => {
 };
 
 // Initialization
+const initMobileMenu = () => {
+    const toggle = document.getElementById('menu-toggle');
+    const close = document.getElementById('menu-close');
+    const menu = document.getElementById('mobile-menu');
+    const links = document.querySelectorAll('.mobile-nav-links a');
+
+    if (toggle && menu) {
+        toggle.onclick = () => menu.classList.add('active');
+    }
+
+    if (close && menu) {
+        close.onclick = () => menu.classList.remove('active');
+    }
+
+    links.forEach(link => {
+        link.onclick = () => menu.classList.remove('active');
+    });
+};
+
 window.addEventListener('hashchange', router);
-window.addEventListener('load', () => {
-    const app = document.getElementById('app');
+
+document.addEventListener('DOMContentLoaded', () => {
+    router();
+    initMobileMenu();
+    
     // Add overlay if it doesn't exist
-    if (!document.getElementById('overlay')) {
+    const app = document.getElementById('app');
+    if (app && !document.getElementById('overlay')) {
         const overlay = document.createElement('div');
         overlay.id = 'overlay';
         app.appendChild(overlay);
         overlay.addEventListener('click', toggleCart);
     }
 
-    document.getElementById('cart-btn').addEventListener('click', toggleCart);
+    const cartBtn = document.getElementById('cart-btn');
+    if (cartBtn) cartBtn.addEventListener('click', toggleCart);
 
-    router();
+
 
     // Append footer
-    const main = document.getElementById('app');
-    if (!document.getElementById('footer')) {
-        main.insertAdjacentHTML('beforeend', renderFooter());
+    if (app && !document.getElementById('footer')) {
+        app.insertAdjacentHTML('beforeend', renderFooter());
     }
 
     // Inject checkout modal
@@ -1123,6 +1165,8 @@ window.addEventListener('load', () => {
           </div>
         </div>`);
     }
+
+    const cartCount = document.getElementById('cart-count');
+    if (cartCount) cartCount.innerText = cart.length;
 });
 
-document.getElementById('cart-count').innerText = cart.length;
