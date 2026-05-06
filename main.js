@@ -21,6 +21,9 @@ let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
 let userProfile = JSON.parse(localStorage.getItem('userProfile')) || {
     name: '', email: '', phone: '', address: '', city: '', avatar: null, language: 'en'
 };
+let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [
+    { email: 'uttam123@gmail.com', pass: '12345678', role: 'admin', name: 'Super Admin' }
+];
 
 // Helper to get correct asset path
 const getAssetPath = (path) => {
@@ -33,7 +36,7 @@ const getAssetPath = (path) => {
 
 // Fix paths in loaded state
 products = products.map(p => ({ ...p, image: getAssetPath(p.image) }));
-cart     = cart.map(p =>     ({ ...p, image: getAssetPath(p.image) }));
+cart = cart.map(p => ({ ...p, image: getAssetPath(p.image) }));
 
 
 // Language dictionary
@@ -44,7 +47,8 @@ const LANG = {
         featured: 'Featured Products', categories: 'Our Categories', heroTitle: 'Multi-Brand',
         heroSpan: 'Painting Solutions', heroSub: 'Authorized dealers for Asian Paints, Dulux, Berger, and more.',
         checkout: 'Checkout Now', myOrders: 'My Orders', myProfile: 'My Profile', settings: 'Settings',
-        language: 'Language', save: 'Save Changes', logout: 'Logout', login: 'Login', dashboard: 'Dashboard'
+        language: 'Language', save: 'Save Changes', logout: 'Logout', login: 'Login', dashboard: 'Dashboard',
+        locateUs: 'Locate Us'
     },
     hi: {
         home: 'होम', products: 'पेंट उत्पाद', supplies: 'आपूर्ति', about: 'हमारे बारे में',
@@ -52,7 +56,8 @@ const LANG = {
         featured: 'विशेष उत्पाद', categories: 'हमारी श्रेणियाँ', heroTitle: 'मल्टी-ब्रांड',
         heroSpan: 'पेंटिंग समाधान', heroSub: 'एशियन पेंट्स, डुलक्स, बर्जर और अधिक के अधिकृत डीलर।',
         checkout: 'चेकआउट करें', myOrders: 'मेरे ऑर्डर', myProfile: 'मेरी प्रोफ़ाइल', settings: 'सेटिंग्स',
-        language: 'भाषा', save: 'परिवर्तन सहेजें', logout: 'लॉग आउट', login: 'लॉगिन', dashboard: 'डैशबोर्ड'
+        language: 'भाषा', save: 'परिवर्तन सहेजें', logout: 'लॉग आउट', login: 'लॉगिन', dashboard: 'डैशबोर्ड',
+        locateUs: 'हमें खोजें'
     },
     es: {
         home: 'Inicio', products: 'Pinturas', supplies: 'Suministros', about: 'Sobre Nosotros',
@@ -60,7 +65,8 @@ const LANG = {
         featured: 'Productos Destacados', categories: 'Nuestras Categorías', heroTitle: 'Multi-Marca',
         heroSpan: 'Soluciones de Pintura', heroSub: 'Distribuidores autorizados de Asian Paints, Dulux, Berger y más.',
         checkout: 'Pagar Ahora', myOrders: 'Mis Pedidos', myProfile: 'Mi Perfil', settings: 'Configuración',
-        language: 'Idioma', save: 'Guardar Cambios', logout: 'Cerrar Sesión', login: 'Iniciar Sesión', dashboard: 'Panel'
+        language: 'Idioma', save: 'Guardar Cambios', logout: 'Cerrar Sesión', login: 'Iniciar Sesión', dashboard: 'Panel',
+        locateUs: 'Ubícanos'
     },
     fr: {
         home: 'Accueil', products: 'Peintures', supplies: 'Fournitures', about: 'À Propos',
@@ -68,7 +74,8 @@ const LANG = {
         featured: 'Produits Vedettes', categories: 'Nos Catégories', heroTitle: 'Multi-Marque',
         heroSpan: 'Solutions de Peinture', heroSub: 'Distributeurs agréés d\'Asian Paints, Dulux, Berger et plus.',
         checkout: 'Passer la Commande', myOrders: 'Mes Commandes', myProfile: 'Mon Profil', settings: 'Paramètres',
-        language: 'Langue', save: 'Enregistrer', logout: 'Se Déconnecter', login: 'Connexion', dashboard: 'Tableau de Bord'
+        language: 'Langue', save: 'Enregistrer', logout: 'Se Déconnecter', login: 'Connexion', dashboard: 'Tableau de Bord',
+        locateUs: 'Nous Trouver'
     }
 };
 const t = (key) => (LANG[userProfile.language] || LANG.en)[key] || key;
@@ -80,13 +87,14 @@ const saveState = () => {
     localStorage.setItem('orders', JSON.stringify(orders));
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
     localStorage.setItem('userProfile', JSON.stringify(userProfile));
+    localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
 };
 
 // Auth Helper
 const isAdmin = () => currentUser && currentUser.role === 'admin';
 
 // In-page section hashes — these live inside the store view
-const SECTION_HASHES = new Set(['#products', '#about', '#supplies', '#categories', '#stats']);
+const SECTION_HASHES = new Set(['#products', '#about', '#supplies', '#categories', '#stats', '#shop-location']);
 
 // Router
 const router = () => {
@@ -114,6 +122,9 @@ const router = () => {
     } else if (hash === '#login') {
         renderLogin(mainContent);
         window.scrollTo(0, 0);
+    } else if (hash === '#signup') {
+        renderSignup(mainContent);
+        window.scrollTo(0, 0);
     } else {
         renderStore(mainContent);
         // For section hashes on fresh load, scroll after render
@@ -138,21 +149,22 @@ const updateNavbar = () => {
     const authStatus = document.getElementById('auth-status');
     // Update nav link text with language
     const navLinks = document.querySelectorAll('.nav-links a');
-    if (navLinks.length >= 4) {
+    if (navLinks.length >= 5) {
         navLinks[0].textContent = t('home');
         navLinks[1].textContent = t('products');
         navLinks[2].textContent = t('supplies');
         navLinks[3].textContent = t('about');
+        navLinks[4].textContent = t('locateUs');
     }
     if (isAdmin()) {
         authStatus.innerHTML = `
-            <a href="#admin" class="auth-btn auth-btn-login" style="margin-right:10px">${t('dashboard')}</a>
+            <a href="#admin" class="auth-btn auth-btn-login">${t('dashboard')}</a>
             <div class="nav-avatar" onclick="openProfile()" title="Profile">${getAvatarHTML()}</div>
         `;
     } else {
         authStatus.innerHTML = `
             <div class="nav-avatar" onclick="openProfile()" title="My Profile">${getAvatarHTML()}</div>
-            <a href="#login" class="auth-btn auth-btn-login" style="margin-left:12px">${t('login')}</a>
+            <a href="#login" class="auth-btn auth-btn-login">${t('login')}</a>
         `;
     }
 };
@@ -236,10 +248,16 @@ const renderStore = (container) => {
             <div class="category-grid" style="align-items: center;">
                 <div class="reveal">
                     <h2 style="font-size: 2.5rem; color: var(--primary); margin-bottom: 20px;">Why Choose Saw & Sons?</h2>
-                    <p style="color: #475569; margin-bottom: 20px;">We are more than just a paint shop. We are your partners in transformation. With over 30 years of experience, we provide authorized solutions from the world's leading brands.</p>
+                    <p style="color: #475569; margin-bottom: 20px;">We are more than just a paint shop. We are your partners in transformation. With our knowledge and experience, we provide authorized solutions from the best brands.</p>
                     <ul style="list-style: none; color: #475569;">
                         <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: var(--accent-orange); margin-right: 10px;"></i> Authorized Multi-Brand Dealer</li>
-                        <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: var(--accent-orange); margin-right: 10px;"></i> Expert Color Consultation</li>
+                        <li style="margin-bottom: 18px; display: flex; align-items: flex-start; gap: 12px;">
+                            <i class="fas fa-palette" style="color: var(--accent-orange); margin-top: 5px;"></i>
+                            <div>
+                                <strong style="display: block; color: var(--dark); font-size: 1.1rem;">Tailored Color Consultations</strong>
+                                <span style="font-size: 0.95rem; color: #64748b; line-height: 1.5; display: block; margin-top: 4px;">Don't guess your colors. Our experts help you match shades to your lighting and furniture for the perfect finish.</span>
+                            </div>
+                        </li>
                         <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: var(--accent-orange); margin-right: 10px;"></i> Next-Day Delivery Services</li>
                     </ul>
                 </div>
@@ -250,26 +268,27 @@ const renderStore = (container) => {
             </div>
         </section>
 
-        <section id="stats" class="categories" style="background: var(--bg-alt); border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
-            <div class="category-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); text-align: center;">
-                <div class="reveal">
-                    <h2 style="font-size: 3rem; color: var(--primary);">30K+</h2>
-                    <p style="color: #64748b;">Happy Customers</p>
+        <section id="shop-location" class="categories" style="background: #fff;">
+            <div class="section-title reveal">
+                <h2>Visit Our Shop</h2>
+                <div class="underline"></div>
+            </div>
+            <div class="shop-location-grid reveal">
+                <div class="shop-image-wrap">
+                    <img src="${getAssetPath('assets/shop.jpg')}" alt="Saw & Sons Shop in Dhanbad">
                 </div>
-                <div class="reveal" style="transition-delay: 0.1s">
-                    <h2 style="font-size: 3rem; color: var(--accent-orange);">512K</h2>
-                    <p style="color: #64748b;">Projects Completed</p>
-                </div>
-                <div class="reveal" style="transition-delay: 0.2s">
-                    <h2 style="font-size: 3rem; color: var(--accent-magenta);">150+</h2>
-                    <p style="color: #64748b;">Unique Shades</p>
-                </div>
-                <div class="reveal" style="transition-delay: 0.3s">
-                    <h2 style="font-size: 3rem; color: var(--accent-yellow);">24/7</h2>
-                    <p style="color: #64748b;">Expert Support</p>
+                <div class="shop-details">
+                    <h3>Saw & Sons Enterprises</h3>
+                    <p><i class="fas fa-map-marker-alt" style="color: var(--accent-orange); margin-right: 10px;"></i> Dhanbad, Jharkhand, India</p>
+                    <p>Our premium showroom in Dhanbad offers the widest range of paints and supplies. Visit us for expert advice and the best prices.</p>
+                    <a href="https://maps.app.goo.gl/3acaCnJRAc9UgeiX9?g_st=ac" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-directions" style="margin-right: 8px;"></i> View on Google Maps
+                    </a>
                 </div>
             </div>
         </section>
+
+        <section id="stats" class="categories" style="display:none"></section>
     `;
     initReveal();
 };
@@ -278,34 +297,117 @@ const renderStore = (container) => {
 const renderLogin = (container) => {
     container.innerHTML = `
         <div class="login-container reveal">
-            <h2>Admin Login</h2>
-            <p style="margin-bottom: 25px; color: #64748b;">Please enter your credentials to access the admin panel.</p>
+            <h2>Sign In</h2>
+            <p style="margin-bottom: 25px; color: #64748b;">Welcome back! Please enter your details.</p>
             <form id="login-form">
                 <div class="form-group" style="text-align: left;">
                     <label>Email Address</label>
-                    <input type="email" id="l-email" required placeholder="admin@sawandsons.com">
+                    <input type="email" id="l-email" name="email" autocomplete="email" required placeholder="Enter your email">
                 </div>
                 <div class="form-group" style="text-align: left;">
                     <label>Password</label>
-                    <input type="password" id="l-pass" required placeholder="••••••••">
+                    <div class="password-input-wrapper">
+                        <input type="password" id="l-pass" name="password" required placeholder="Enter password">
+                        <button type="button" id="toggle-pass" class="password-toggle" title="Toggle Password">👁️</button>
+                    </div>
                 </div>
                 <button type="button" id="login-btn" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Sign In</button>
             </form>
-            <p style="margin-top: 20px; font-size: 0.8rem; color: #94a3b8;">Default: admin@sawandsons.com / admin123</p>
+            <p style="margin-top: 25px; color: #64748b; font-size: 0.9rem;">
+                Don't have an account? <a href="#signup" style="color: var(--primary); font-weight: 700;">Create Account</a>
+            </p>
         </div>
     `;
+
+    const passInput = document.getElementById('l-pass');
+    const toggleBtn = document.getElementById('toggle-pass');
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            const isPass = passInput.type === 'password';
+            passInput.type = isPass ? 'text' : 'password';
+            toggleBtn.textContent = isPass ? '🙈' : '👁️';
+        });
+    }
 
     document.getElementById('login-btn').addEventListener('click', () => {
         const email = document.getElementById('l-email').value;
         const pass = document.getElementById('l-pass').value;
 
-        if (email === 'admin@sawandsons.com' && pass === 'admin123') {
-            currentUser = { email, role: 'admin', name: 'Super Admin' };
+        const user = registeredUsers.find(u => u.email === email && u.pass === pass);
+
+        if (user) {
+            currentUser = user;
             saveState();
-            window.location.hash = '#admin';
+            window.location.hash = user.role === 'admin' ? '#admin' : '#home';
         } else {
-            alert('Invalid credentials!');
+            alert('Invalid email or password!');
         }
+    });
+
+    initReveal();
+};
+
+// --- Signup Rendering ---
+const renderSignup = (container) => {
+    container.innerHTML = `
+        <div class="login-container reveal">
+            <h2>Create Account</h2>
+            <p style="margin-bottom: 25px; color: #64748b;">Join Saw & Sons today!</p>
+            <form id="signup-form">
+                <div class="form-group" style="text-align: left;">
+                    <label>Full Name</label>
+                    <input type="text" id="s-name" required placeholder="Enter your name">
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label>Email Address</label>
+                    <input type="email" id="s-email" required placeholder="Enter your email">
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label>Password</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="s-pass" required placeholder="Create password">
+                        <button type="button" id="toggle-s-pass" class="password-toggle">👁️</button>
+                    </div>
+                </div>
+                <button type="button" id="signup-btn" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Create Account</button>
+            </form>
+            <p style="margin-top: 25px; color: #64748b; font-size: 0.9rem;">
+                Already have an account? <a href="#login" style="color: var(--primary); font-weight: 700;">Sign In</a>
+            </p>
+        </div>
+    `;
+
+    const passInput = document.getElementById('s-pass');
+    const toggleBtn = document.getElementById('toggle-s-pass');
+
+    toggleBtn.addEventListener('click', () => {
+        const isPass = passInput.type === 'password';
+        passInput.type = isPass ? 'text' : 'password';
+        toggleBtn.textContent = isPass ? '🙈' : '👁️';
+    });
+
+    document.getElementById('signup-btn').addEventListener('click', () => {
+        const name = document.getElementById('s-name').value;
+        const email = document.getElementById('s-email').value;
+        const pass = document.getElementById('s-pass').value;
+
+        if (!name || !email || !pass) {
+            alert('Please fill all fields');
+            return;
+        }
+
+        if (registeredUsers.some(u => u.email === email)) {
+            alert('Email already registered!');
+            return;
+        }
+
+        const newUser = { name, email, pass, role: 'user' };
+        registeredUsers.push(newUser);
+        currentUser = newUser;
+        saveState();
+        window.location.hash = '#home';
+        alert('Account created successfully!');
     });
 
     initReveal();
@@ -374,8 +476,9 @@ const renderAdmin = (container) => {
                                         ${p.stock > 20 ? 'In Stock' : p.stock > 0 ? 'Low Stock' : 'Out of Stock'}
                                     </span>
                                 </td>
-                                <td>
-                                    <button onclick="removeProduct(${p.id})" style="color: #ef4444; border: none; background: none; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                                 <td>
+                                    <button onclick="editProduct(${p.id})" style="color: var(--primary); border: none; background: none; cursor: pointer; margin-right: 12px; font-size: 1.1rem;"><i class="fas fa-edit"></i></button>
+                                    <button onclick="removeProduct(${p.id})" style="color: #ef4444; border: none; background: none; cursor: pointer; font-size: 1.1rem;"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
                         `).join('')}
@@ -540,9 +643,26 @@ window.removeProduct = (id) => {
     }
 };
 
+window.closeProductModal = () => {
+    document.getElementById('product-modal').style.display = 'none';
+};
+
 window.showAddProductModal = () => {
     const modal = document.getElementById('product-modal');
-    modal.style.display = 'block';
+    const form = document.getElementById('product-form');
+    const title = modal.querySelector('h2');
+
+    form.reset();
+    document.getElementById('p-id').value = '';
+    document.getElementById('image-preview').innerHTML = 'No image selected';
+    title.textContent = 'Add New Product';
+
+    modal.style.display = 'flex';
+
+    // Close logic
+    const closeBtn = modal.querySelector('.close-modal');
+    closeBtn.onclick = closeProductModal;
+    modal.onclick = (e) => { if (e.target === modal) closeProductModal(); };
 
     // Preview logic
     const fileInput = document.getElementById('p-image-file');
@@ -557,18 +677,36 @@ window.showAddProductModal = () => {
             reader.readAsDataURL(file);
         }
     };
+};
+
+window.editProduct = (id) => {
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    const modal = document.getElementById('product-modal');
+    const title = modal.querySelector('h2');
+    title.textContent = 'Edit Product';
+
+    document.getElementById('p-id').value = product.id;
+    document.getElementById('p-name').value = product.name;
+    document.getElementById('p-category').value = product.category;
+    document.getElementById('p-price').value = product.price;
+    document.getElementById('p-stock').value = product.stock;
+    document.getElementById('p-desc').value = product.description || '';
+    document.getElementById('image-preview').innerHTML = `<img src="${product.image}" alt="Preview">`;
+
+    modal.style.display = 'flex';
 
     // Close logic
-    const closeBtn = document.querySelector('.close-modal');
-    closeBtn.onclick = () => modal.style.display = 'none';
-    window.onclick = (event) => {
-        if (event.target == modal) modal.style.display = 'none';
-    };
+    const closeBtn = modal.querySelector('.close-modal');
+    closeBtn.onclick = closeProductModal;
+    modal.onclick = (e) => { if (e.target === modal) closeProductModal(); };
 };
 
 // Form Submission
 document.getElementById('product-form').onsubmit = (e) => {
     e.preventDefault();
+    const id = document.getElementById('p-id').value;
     const name = document.getElementById('p-name').value;
     const category = document.getElementById('p-category').value;
     const price = parseFloat(document.getElementById('p-price').value);
@@ -578,20 +716,28 @@ document.getElementById('product-form').onsubmit = (e) => {
     const image = previewImg ? previewImg.src : getAssetPath('assets/interior.png');
 
     if (name && !isNaN(price) && !isNaN(stock)) {
-        products.push({
-            id: Date.now(),
-            name,
-            price,
-            stock,
-            category,
-            image,
-            description: desc
-        });
+        if (id) {
+            // Edit existing
+            const index = products.findIndex(p => p.id == id);
+            if (index !== -1) {
+                products[index] = {
+                    ...products[index],
+                    name, price, stock, category, image, description: desc
+                };
+            }
+        } else {
+            // Add new
+            products.push({
+                id: Date.now(),
+                name, price, stock, category, image, description: desc
+            });
+        }
         saveState();
         document.getElementById('product-modal').style.display = 'none';
         document.getElementById('product-form').reset();
         document.getElementById('image-preview').innerHTML = 'No image selected';
         renderAdmin(document.getElementById('main-content'));
+        showToast(id ? 'Product updated successfully!' : 'Product added successfully!');
     }
 };
 
@@ -644,6 +790,7 @@ const renderFooter = () => {
                         <li><a href="#home">Home</a></li>
                         <li><a href="#products">Products</a></li>
                         <li><a href="#about">About Us</a></li>
+                        <li><a href="#shop-location">Shop Location</a></li>
                         <li><a href="#admin">Admin Panel</a></li>
                     </ul>
                 </div>
@@ -1045,7 +1192,7 @@ window.addEventListener('hashchange', router);
 document.addEventListener('DOMContentLoaded', () => {
     router();
     initMobileMenu();
-    
+
     // Add overlay if it doesn't exist
     const app = document.getElementById('app');
     if (app && !document.getElementById('overlay')) {
