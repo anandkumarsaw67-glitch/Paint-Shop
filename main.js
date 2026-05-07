@@ -1,6 +1,17 @@
 // State Management
-const DEFAULT_IMAGE = './assets/interior.png';
 const BASE_PATH = window.location.pathname.includes('/Paint-Shop/') ? '/Paint-Shop/' : '/';
+const DEFAULT_IMAGE_PATH = 'assets/interior.png';
+
+// Helper to get correct asset path
+const getAssetPath = (path) => {
+    if (!path) return BASE_PATH + DEFAULT_IMAGE_PATH;
+    if (path.startsWith('data:')) return path;
+    // Remove leading dot, slash, and optional repo base prefix to normalize
+    let cleanPath = path.replace(/^\.?\/|^Paint-Shop\//, '').replace(/^\/?/, '');
+    return BASE_PATH + cleanPath;
+};
+
+const DEFAULT_IMAGE = getAssetPath(DEFAULT_IMAGE_PATH);
 
 let products = JSON.parse(localStorage.getItem('products')) || [
     { id: 1, name: 'Asian Paints Royale Luxury', category: 'Interior', price: 45.00, stock: 120, image: 'assets/interior.png', description: 'Experience luxury with Asian Paints Royale. A perfect silk finish for your walls.' },
@@ -24,15 +35,6 @@ let userProfile = JSON.parse(localStorage.getItem('userProfile')) || {
 let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [
     { email: 'uttam123@gmail.com', pass: '12345678', role: 'admin', name: 'Super Admin' }
 ];
-
-// Helper to get correct asset path
-const getAssetPath = (path) => {
-    if (!path) return DEFAULT_IMAGE;
-    if (path.startsWith('data:')) return path;
-    // Remove leading slashes and base paths to normalize
-    let cleanPath = path.replace(/^\/?(Paint-Shop\/)?/, '');
-    return BASE_PATH + cleanPath;
-};
 
 // Fix paths in loaded state
 products = products.map(p => ({ ...p, image: getAssetPath(p.image) }));
@@ -275,7 +277,7 @@ const renderStore = (container) => {
             </div>
             <div class="shop-location-grid reveal">
                 <div class="shop-image-wrap">
-                    <img src="${getAssetPath('assets/shop.jpg')}" alt="Saw & Sons Shop in Dhanbad">
+                    <img src="${getAssetPath('assets/shop.jpg')}" alt="Saw & Sons Enterprises, Shop in Dhanbad">
                 </div>
                 <div class="shop-details">
                     <h3>Saw & Sons Enterprises</h3>
@@ -353,7 +355,7 @@ const renderSignup = (container) => {
     container.innerHTML = `
         <div class="login-container reveal">
             <h2>Create Account</h2>
-            <p style="margin-bottom: 25px; color: #64748b;">Join Saw & Sons today!</p>
+            <p style="margin-bottom: 25px; color: #64748b;">Join Saw & Sons Enterprises today!</p>
             <form id="signup-form">
                 <div class="form-group" style="text-align: left;">
                     <label>Full Name</label>
@@ -782,7 +784,7 @@ const renderFooter = () => {
                         <span>SAW & SONS</span>
                     </div>
 
-                    <p style="color: #94a3b8;">Authorized retail partners for leading paint brands. Providing quality solutions since 1990.</p>
+                    <p style="color: #94a3b8;">Authorized retail partners for leading paint brands. Providing quality solutions.</p>
                 </div>
                 <div class="footer-col">
                     <h4>Quick Links</h4>
@@ -806,9 +808,9 @@ const renderFooter = () => {
                 <div class="footer-col">
                     <h4>Contact Us</h4>
                     <ul style="color: #94a3b8;">
-                        <li><i class="fas fa-map-marker-alt"></i> 123 Paint Street, Design City</li>
-                        <li><i class="fas fa-phone"></i> +1 234 567 890</li>
-                        <li><i class="fas fa-envelope"></i> info@sawandsons.com</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Baliapur Road Kola kusma nera shiv mandir Dhanbad</li>
+                        <li><i class="fas fa-phone"></i> +91 9155010850</li>
+                        <li><i class="fas fa-envelope"></i> uttamsahu915@gmail.com</li>
                     </ul>
                 </div>
             </div>
@@ -1142,7 +1144,7 @@ window.proceedToConfirm = () => {
     // Populate confirmation
     document.getElementById('confirm-order-id').textContent = orderId;
     document.getElementById('confirm-items').textContent = cart.length + ' item(s)';
-    document.getElementById('confirm-total').textContent = '$' + total.toFixed(2);
+    document.getElementById('confirm-total').textContent = '₹' + total.toFixed(2);
     document.getElementById('confirm-address').textContent =
         `${document.getElementById('co-name').value}, ${document.getElementById('co-address').value}, ${document.getElementById('co-city').value} - ${document.getElementById('co-pincode').value}`;
     document.getElementById('confirm-payment').textContent = selected.querySelector('.pay-label').textContent;
